@@ -754,7 +754,7 @@ public class ExoticGarden extends JavaPlugin {
 	}
 
 	public void registerMagicalPlant(String name, ItemStack item, String skull, ItemStack[] recipe) {
-		ItemStack essence = new CustomItem(Material.BLAZE_POWDER, "&rMagical Essence", "", "&7" + name);
+		ItemStack essence = new CustomItem(Material.BLAZE_POWDER, "&rEsencia mágica", "", "&7" + name);
 
 		Berry berry = new Berry(essence, name.toUpperCase() + "_ESSENCE", PlantType.ORE_PLANT, new PlantData(skull));
 		berries.add(berry);

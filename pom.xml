@@ -110,12 +110,12 @@
 	        <version>v1.6.1</version>
   			<scope>provided</scope>
 	    </dependency>
-        <dependency>
-	    	<groupId>com.github.TheBusyBiscuit</groupId>
-	   		<artifactId>Slimefun4</artifactId>
-	   		<version>3619c4bc9e</version>
-  			<scope>provided</scope>
-	    </dependency>
+	<dependency>
+	    <groupId>com.github.Agnax</groupId>
+	    <artifactId>Slimefun4</artifactId>
+	    <version>v4.2-Beta.1</version>
+  		<scope>provided</scope>
+	</dependency>
         <dependency>
   			<groupId>com.github.thebusybiscuit</groupId>
   			<artifactId>CS-CoreLib2</artifactId>

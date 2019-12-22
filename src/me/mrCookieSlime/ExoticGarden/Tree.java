@@ -20,8 +20,8 @@ public class Tree {
 	private List<Material> soils;
 
 	public Tree(String fruit, String texture, Material... soil) {
-		this.sapling = fruit + "_SAPLING";
-		this.schematic = fruit + "_TREE";
+		this.sapling = "ARBUSTO_DE_" + fruit;
+		this.schematic = "ARBOL_DE_" + fruit;
 		this.texture = texture;
 		this.fruit = fruit;
 		this.soils = Arrays.asList(soil);

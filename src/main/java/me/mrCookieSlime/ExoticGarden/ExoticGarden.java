@@ -20,7 +20,6 @@ import org.bukkit.potion.PotionEffectType;
 import me.mrCookieSlime.CSCoreLibPlugin.general.Inventory.Item.CustomPotion;
 import me.mrCookieSlime.ExoticGarden.items.Crook;
 import me.mrCookieSlime.ExoticGarden.items.GrassSeeds;
-import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
 import me.mrCookieSlime.Slimefun.Lists.Categories;
 import me.mrCookieSlime.Slimefun.Lists.RecipeType;
 import me.mrCookieSlime.Slimefun.Lists.SlimefunItems;
@@ -29,6 +28,7 @@ import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.HandledBlock;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.Juice;
 import me.mrCookieSlime.Slimefun.Objects.SlimefunItem.SlimefunItem;
 import me.mrCookieSlime.Slimefun.api.BlockStorage;
+import me.mrCookieSlime.Slimefun.api.SlimefunItemStack;
 import me.mrCookieSlime.Slimefun.bstats.bukkit.Metrics;
 import me.mrCookieSlime.Slimefun.cscorelib2.config.Config;
 import me.mrCookieSlime.Slimefun.cscorelib2.item.CustomItem;
@@ -47,10 +47,10 @@ public class ExoticGarden extends JavaPlugin {
 
 	protected Config cfg;
 
-	private Category category_main;
-	private Category category_food;
-	private Category category_drinks;
-	private Category category_magic;
+	private Category mainCategory;
+	private Category foodCategory;
+	private Category drinksCategory;
+	private Category magicalCategory;
 	private Kitchen kitchen;
 
 	@Override
@@ -79,10 +79,10 @@ public class ExoticGarden extends JavaPlugin {
 		// Only run the Updater if it has not been disabled
 		if (cfg.getBoolean("options.auto-update")) updater.start();
 
-		category_main = new Category(new CustomItem(SkullItem.fromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVhNWM0YTBhMTZkYWJjOWIxZWM3MmZjODNlMjNhYzE1ZDAxOTdkZTYxYjEzOGJhYmNhN2M4YTI5YzgyMCJ9fX0="), "&aJardín Exótico - Plantas y frutas", "", "&a> Click para abrir"));
-		category_food = new Category(new CustomItem(SkullItem.fromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19"), "&aJardín Exótico - Comida", "", "&a> Click para abrir"));
-		category_drinks = new Category(new CustomItem(SkullItem.fromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmE4ZjFmNzBlODU4MjU2MDdkMjhlZGNlMWEyYWQ0NTA2ZTczMmI0YTUzNDVhNWVhNmU4MDdjNGIzMTNlODgifX19"), "&aJardín Exótico - Bebidas", "", "&a> Click para abrir"));
-		category_magic = new Category(new CustomItem(Material.BLAZE_POWDER, "&5Exotic Garden - Magical Plants", "", "&a> Click to open"));
+		mainCategory = new Category(new CustomItem(SkullItem.fromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTVhNWM0YTBhMTZkYWJjOWIxZWM3MmZjODNlMjNhYzE1ZDAxOTdkZTYxYjEzOGJhYmNhN2M4YTI5YzgyMCJ9fX0="), "&aJardín Exótico - Plantas y frutas", "", "&a> Click para abrir"));
+		foodCategory = new Category(new CustomItem(SkullItem.fromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19"), "&aJardín Exótico - Comida", "", "&a> Click para abrir"));
+		drinksCategory = new Category(new CustomItem(SkullItem.fromBase64("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmE4ZjFmNzBlODU4MjU2MDdkMjhlZGNlMWEyYWQ0NTA2ZTczMmI0YTUzNDVhNWVhNmU4MDdjNGIzMTNlODgifX19"), "&aJardín Exótico - Bebidas", "", "&a> Click para abrir"));
+		magicalCategory = new Category(new CustomItem(Material.BLAZE_POWDER, "&5Exotic Garden - Magical Plants", "", "&a> Click to open"));
 
 		SlimefunItemStack iceCube = new SlimefunItemStack("ICE_CUBE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTM0MGJlZjJjMmMzM2QxMTNiYWM0ZTZhMWE4NGQ1ZmZjZWNiYmZhYjZiMzJmYTdhN2Y3NjE5NTQ0MmJkMWEyIn19fQ==", "&bCubo de hielo");
 		new SlimefunItem(Categories.MISC, iceCube, RecipeType.GRIND_STONE,
@@ -172,8 +172,8 @@ public class ExoticGarden extends JavaPlugin {
 		new ItemStack[] {new ItemStack(Material.STICK), new ItemStack(Material.STICK), null, null, new ItemStack(Material.STICK), null, null, new ItemStack(Material.STICK), null})
 		.register();
 
-		SlimefunItemStack grass_seeds = new SlimefunItemStack("GRASS_SEEDS", Material.PUMPKIN_SEEDS, "&rSemillas de cesped", "", "&7&oSe puede plantar en tierra");
-		new GrassSeeds(category_main, grass_seeds, new RecipeType(new CustomItem(Material.GRASS, "&7Romper hierba")),
+		SlimefunItemStack grassSeeds = new SlimefunItemStack("GRASS_SEEDS", Material.PUMPKIN_SEEDS, "&rSemillas de cesped", "", "&7&oSe puede plantar en tierra");
+		new GrassSeeds(mainCategory, grassSeeds, new RecipeType(new CustomItem(Material.GRASS, "&7Romper hierba")),
 		new ItemStack[] {null, null, null, null, new ItemStack(Material.GRASS), null, null, null, null})
 		.register();
 
@@ -189,7 +189,7 @@ public class ExoticGarden extends JavaPlugin {
 		items.put("JUNGLE_SAPLING", new ItemStack(Material.JUNGLE_SAPLING));
 		items.put("ACACIA_SAPLING", new ItemStack(Material.ACACIA_SAPLING));
 		items.put("DARK_OAK_SAPLING", new ItemStack(Material.DARK_OAK_SAPLING));
-		items.put("GRASS_SEEDS", grass_seeds);
+		items.put("GRASS_SEEDS", grassSeeds);
 
 		Iterator<String> iterator = items.keySet().iterator();
 		while (iterator.hasNext()) {
@@ -201,43 +201,43 @@ public class ExoticGarden extends JavaPlugin {
 	}
 
 	private void registerDishes() {
-		new Juice(category_drinks, new SlimefunItemStack("LIME_SMOOTHIE", new CustomPotion("&aBatido de lima", Color.LIME, new PotionEffect(PotionEffectType.SATURATION, 10, 0), "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(drinksCategory, new SlimefunItemStack("LIME_SMOOTHIE", new CustomPotion("&aBatido de lima", Color.LIME, new PotionEffect(PotionEffectType.SATURATION, 10, 0), "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("LIME_JUICE"), getItem("ICE_CUBE"), null, null, null, null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack("TOMATO_JUICE", new CustomPotion("&4Jugo de tomate", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 6, 0), "", "&7&oRestaura &b&o" + "3.0" + " &7&ode hambre")), RecipeType.JUICER,
+		new Juice(drinksCategory, new SlimefunItemStack("TOMATO_JUICE", new CustomPotion("&4Jugo de tomate", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 6, 0), "", "&7&oRestaura &b&o" + "3.0" + " &7&ode hambre")), RecipeType.JUICER,
 		new ItemStack[] {getItem("TOMATO"), null, null, null, null, null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack("WINE", new CustomPotion("&cVino", Color.RED, new PotionEffect(PotionEffectType.SATURATION, 10, 0), "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(drinksCategory, new SlimefunItemStack("WINE", new CustomPotion("&cVino", Color.RED, new PotionEffect(PotionEffectType.SATURATION, 10, 0), "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("GRAPE"), new ItemStack(Material.SUGAR), null, null, null, null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack("LEMON_ICED_TEA", new CustomPotion("&eTé helado de limón", Color.YELLOW, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(drinksCategory, new SlimefunItemStack("LEMON_ICED_TEA", new CustomPotion("&eTé helado de limón", Color.YELLOW, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("LEMON"), getItem("ICE_CUBE"), getItem("TEA_LEAF"), null, null, null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack("RASPBERRY_ICED_TEA", new CustomPotion("&dTé helado de frambuesa", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(drinksCategory, new SlimefunItemStack("RASPBERRY_ICED_TEA", new CustomPotion("&dTé helado de frambuesa", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("RASPBERRY"), getItem("ICE_CUBE"), getItem("TEA_LEAF"), null, null, null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack("PEACH_ICED_TEA", new CustomPotion("&dTé helado de Durazno", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(drinksCategory, new SlimefunItemStack("PEACH_ICED_TEA", new CustomPotion("&dTé helado de Durazno", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("PEACH"), getItem("ICE_CUBE"), getItem("TEA_LEAF"), null, null, null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack("STRAWBERRY_ICED_TEA", new CustomPotion("&4Té helado de fresa", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(drinksCategory, new SlimefunItemStack("STRAWBERRY_ICED_TEA", new CustomPotion("&4Té helado de fresa", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("STRAWBERRY"), getItem("ICE_CUBE"), getItem("TEA_LEAF"), null, null, null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack("CHERRY_ICED_TEA", new CustomPotion("&cTé helado de cereza", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(drinksCategory, new SlimefunItemStack("CHERRY_ICED_TEA", new CustomPotion("&cTé helado de cereza", Color.FUCHSIA, new PotionEffect(PotionEffectType.SATURATION, 13, 0), "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("CHERRY"), getItem("ICE_CUBE"), getItem("TEA_LEAF"), null, null, null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack("THAI_TEA", new CustomPotion("&6Té tailandés", Color.RED, new PotionEffect(PotionEffectType.SATURATION, 14, 0), "", "&7&oRestaura &b&o" + "7.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(drinksCategory, new SlimefunItemStack("THAI_TEA", new CustomPotion("&6Té tailandés", Color.RED, new PotionEffect(PotionEffectType.SATURATION, 14, 0), "", "&7&oRestaura &b&o" + "7.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("TEA_LEAF"), new ItemStack(Material.SUGAR), SlimefunItems.HEAVY_CREAM, getItem("COCONUT_MILK"), null, null, null, null, null})
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("PUMPKIN_BREAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjM0ODdkNDU3ZjkwNjJkNzg3YTNlNmNlMWM0NjY0YmY3NDAyZWM2N2RkMTExMjU2ZjE5YjM4Y2U0ZjY3MCJ9fX0=", "&rPan de calabaza", "", "&7&oRestaura &b&o" + "4.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("PUMPKIN_BREAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjM0ODdkNDU3ZjkwNjJkNzg3YTNlNmNlMWM0NjY0YmY3NDAyZWM2N2RkMTExMjU2ZjE5YjM4Y2U0ZjY3MCJ9fX0=", "&rPan de calabaza", "", "&7&oRestaura &b&o" + "4.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.PUMPKIN), new ItemStack(Material.SUGAR), SlimefunItems.WHEAT_FLOUR, null, null, null, null, null, null},
 		8)
 		.register();
@@ -278,413 +278,413 @@ public class ExoticGarden extends JavaPlugin {
 		new ItemStack[] {SlimefunItems.WHEAT_FLOUR, new ItemStack(Material.SUGAR), getItem("BLACK_PEPPER"), null, null, null, null, null, null})
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHOCOLATE_BAR", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODE5Zjk0OGQxNzcxOGFkYWNlNWRkNmUwNTBjNTg2MjI5NjUzZmVmNjQ1ZDcxMTNhYjk0ZDE3YjYzOWNjNDY2In19fQ==", "&rBarra de chocolate", "", "&7&oRestaura &b&o" + "1.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHOCOLATE_BAR", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODE5Zjk0OGQxNzcxOGFkYWNlNWRkNmUwNTBjNTg2MjI5NjUzZmVmNjQ1ZDcxMTNhYjk0ZDE3YjYzOWNjNDY2In19fQ==", "&rBarra de chocolate", "", "&7&oRestaura &b&o" + "1.5" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.COCOA_BEANS), SlimefunItems.HEAVY_CREAM, null, null, null, null, null, null, null},
 		3)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("POTATO_SALAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZlOTJlMTFhNjdiNTY5MzU0NDZhMjE0Y2FhMzcyM2QyOWU2ZGI1NmM1NWZhOGQ0MzE3OWE4YTMxNzZjNmMxIn19fQ==", "&rEnsalada de papas", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("POTATO_SALAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZlOTJlMTFhNjdiNTY5MzU0NDZhMjE0Y2FhMzcyM2QyOWU2ZGI1NmM1NWZhOGQ0MzE3OWE4YTMxNzZjNmMxIn19fQ==", "&rEnsalada de papas", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BAKED_POTATO), getItem("MAYO"), getItem("ONION"), new ItemStack(Material.BOWL), null, null, null, null, null},
 		12)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHICKEN_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSándwich de pollo", "", "&7&oRestaura &b&o" + "5.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHICKEN_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSándwich de pollo", "", "&7&oRestaura &b&o" + "5.5" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.COOKED_CHICKEN), getItem("MAYO"), new ItemStack(Material.BREAD), null, null, null, null, null, null},
 		11)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("FISH_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSándwich de pescado", "", "&7&oRestaura &b&o" + "5.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("FISH_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSándwich de pescado", "", "&7&oRestaura &b&o" + "5.5" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.COOKED_COD), getItem("MAYO"), new ItemStack(Material.BREAD), null, null, null, null, null, null},
 		11)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BAGEL", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTAyZTkyZjEzZGUzYmVlNjkyMjhjMzg0NDc4ZTc2MTIzMDY4MWU1ZmNlOWJkYTE5NWRhZWFmODQ4NDEzOTMzMSJ9fX0=", "&rBagel", "", "&7&oRestaura &b&o" + "2.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BAGEL", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTAyZTkyZjEzZGUzYmVlNjkyMjhjMzg0NDc4ZTc2MTIzMDY4MWU1ZmNlOWJkYTE5NWRhZWFmODQ4NDEzOTMzMSJ9fX0=", "&rBagel", "", "&7&oRestaura &b&o" + "2.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("YEAST"), SlimefunItems.WHEAT_FLOUR, null, null, null, null, null, null, null},
 		4)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("EGG_SALAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZlOTJlMTFhNjdiNTY5MzU0NDZhMjE0Y2FhMzcyM2QyOWU2ZGI1NmM1NWZhOGQ0MzE3OWE4YTMxNzZjNmMxIn19fQ==", "&rEnsalada de huevo", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("EGG_SALAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZlOTJlMTFhNjdiNTY5MzU0NDZhMjE0Y2FhMzcyM2QyOWU2ZGI1NmM1NWZhOGQ0MzE3OWE4YTMxNzZjNmMxIn19fQ==", "&rEnsalada de huevo", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.EGG), getItem("MAYO"), new ItemStack(Material.BOWL), null, null, null, null, null, null},
 		12)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("TOMATO_SOUP", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzYzNjZmMTc0MjhhNDk5MDEyNjg0NGY3NGEwMmRiZjU1MjRmMzViZTEzMjNmOGZhYjBiZjYxYTU3ZmY0MWRlMyJ9fX0=", "&4Sopa de tomate", "", "&7&oRestaura &b&o" + "5.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("TOMATO_SOUP", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNzYzNjZmMTc0MjhhNDk5MDEyNjg0NGY3NGEwMmRiZjU1MjRmMzViZTEzMjNmOGZhYjBiZjYxYTU3ZmY0MWRlMyJ9fX0=", "&4Sopa de tomate", "", "&7&oRestaura &b&o" + "5.5" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BOWL), getItem("TOMATO"), null, null, null, null, null, null, null},
 		11)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("STRAWBERRY_SALAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZlOTJlMTFhNjdiNTY5MzU0NDZhMjE0Y2FhMzcyM2QyOWU2ZGI1NmM1NWZhOGQ0MzE3OWE4YTMxNzZjNmMxIn19fQ==", "&cEnsalada de fresas", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("STRAWBERRY_SALAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZlOTJlMTFhNjdiNTY5MzU0NDZhMjE0Y2FhMzcyM2QyOWU2ZGI1NmM1NWZhOGQ0MzE3OWE4YTMxNzZjNmMxIn19fQ==", "&cEnsalada de fresas", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BOWL), getItem("STRAWBERRY"), getItem("LETTUCE"), getItem("TOMATO"), null, null, null, null, null},
 		10)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("GRAPE_SALAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZlOTJlMTFhNjdiNTY5MzU0NDZhMjE0Y2FhMzcyM2QyOWU2ZGI1NmM1NWZhOGQ0MzE3OWE4YTMxNzZjNmMxIn19fQ==", "&cEnsalada De Uva", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("GRAPE_SALAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWZlOTJlMTFhNjdiNTY5MzU0NDZhMjE0Y2FhMzcyM2QyOWU2ZGI1NmM1NWZhOGQ0MzE3OWE4YTMxNzZjNmMxIn19fQ==", "&cEnsalada De Uva", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BOWL), getItem("GRAPE"), getItem("LETTUCE"), getItem("TOMATO"), null, null, null, null, null},
 		10)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHICKEN_CURRY", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA5ZTBkZDU0ODlmMDNlZmRjODA4MzA4OGY1MjFiODI5NDZjZGVjOThmYzFjOTRjNGUwOTc5MmU0NzM1MTg0YSJ9fX0=", "&rPollo al curry", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHICKEN_CURRY", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA5ZTBkZDU0ODlmMDNlZmRjODA4MzA4OGY1MjFiODI5NDZjZGVjOThmYzFjOTRjNGUwOTc5MmU0NzM1MTg0YSJ9fX0=", "&rPollo al curry", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CILANTRO"), new ItemStack(Material.COOKED_CHICKEN), getItem("BROWN_SUGAR"), getItem("CURRY_LEAF"), getItem("VEGETABLE_OIL"), getItem("CURRY_LEAF"), getItem("ONION"), new ItemStack(Material.BOWL), getItem("GARLIC")},
 		16)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("COCONUT_CHICKEN_CURRY", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA5ZTBkZDU0ODlmMDNlZmRjODA4MzA4OGY1MjFiODI5NDZjZGVjOThmYzFjOTRjNGUwOTc5MmU0NzM1MTg0YSJ9fX0=", "&rPollo curry con coco", "", "&7&oRestaura &b&o" + "9.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("COCONUT_CHICKEN_CURRY", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDA5ZTBkZDU0ODlmMDNlZmRjODA4MzA4OGY1MjFiODI5NDZjZGVjOThmYzFjOTRjNGUwOTc5MmU0NzM1MTg0YSJ9fX0=", "&rPollo curry con coco", "", "&7&oRestaura &b&o" + "9.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("COCONUT"), getItem("COCONUT"), getItem("CHICKEN_CURRY"), null, null, null, null, null, null},
 		19)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BISCUIT", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWYwOTQ0NTZmZDc5NGI2NTMxZmM2ZGVjNmYzOTZiNjgwYjk1MzYwMDIwNjNlMTFjZTI0ZDBhNzRiMGI3ZDg4NSJ9fX0=", "&6Bizcocho", "", "&7&oRestaura &b&o" + "2.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BISCUIT", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZWYwOTQ0NTZmZDc5NGI2NTMxZmM2ZGVjNmYzOTZiNjgwYjk1MzYwMDIwNjNlMTFjZTI0ZDBhNzRiMGI3ZDg4NSJ9fX0=", "&6Bizcocho", "", "&7&oRestaura &b&o" + "2.0" + " &7&ode hambre"),
 		new ItemStack[] {SlimefunItems.WHEAT_FLOUR, SlimefunItems.BUTTER, null, null, null, null, null, null, null},
 		4)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BISCUITS_GRAVY", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjhiYmI4MzVlMjJkOWVjNjJlMjI0MTFiOGUwMTUxMzhkNTU5NzI4M2FkMzZlNjE4ZmU0NGJhNWYxYTZiNjBmZCJ9fX0=", "&rGalletas y salsa de campo", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BISCUITS_GRAVY", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMjhiYmI4MzVlMjJkOWVjNjJlMjI0MTFiOGUwMTUxMzhkNTU5NzI4M2FkMzZlNjE4ZmU0NGJhNWYxYTZiNjBmZCJ9fX0=", "&rGalletas y salsa de campo", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("COUNTRY_GRAVY"), getItem("COUNTRY_GRAVY"), getItem("COUNTRY_GRAVY"), getItem("BISCUIT"), getItem("BISCUIT"), getItem("BISCUIT"), null, new ItemStack(Material.BOWL), null},
 		13)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHEESECAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&rTarta de queso", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHEESECAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&rTarta de queso", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.SUGAR), SlimefunItems.WHEAT_FLOUR, SlimefunItems.HEAVY_CREAM, new ItemStack(Material.EGG), null, null, null, null, null},
 		16)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHERRY_CHEESECAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&cTarta de queso y cerezas", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHERRY_CHEESECAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&cTarta de queso y cerezas", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHEESECAKE"), getItem("CHERRY"), null, null, null, null, null, null, null},
 		17)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BLUEBERRY_CHEESECAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&9Tarta de queso con arándanos", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BLUEBERRY_CHEESECAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&9Tarta de queso con arándanos", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHEESECAKE"), getItem("BLUEBERRY"), null, null, null, null, null, null, null},
 		17)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("PUMPKIN_CHEESECAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&6Pastel De Calabaza", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("PUMPKIN_CHEESECAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&6Pastel De Calabaza", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHEESECAKE"), new ItemStack(Material.PUMPKIN), null, null, null, null, null, null, null},
 		17)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("SWEETENED_PEAR_CHEESECAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&6Pastel de queso de pera azucarada", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("SWEETENED_PEAR_CHEESECAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&6Pastel de queso de pera azucarada", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHEESECAKE"), new ItemStack(Material.SUGAR), getItem("PEAR"), null, null, null, null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BLACKBERRY_COBBLER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzZjMzY1MjNjMmQxMWI4YzhlYTJlOTkyMjkxYzUyYTY1NDc2MGVjNzJkY2MzMmRhMmNiNjM2MTY0ODFlZSJ9fX0=", "&8Paster de Moras", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BLACKBERRY_COBBLER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYzZjMzY1MjNjMmQxMWI4YzhlYTJlOTkyMjkxYzUyYTY1NDc2MGVjNzJkY2MzMmRhMmNiNjM2MTY0ODFlZSJ9fX0=", "&8Paster de Moras", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.SUGAR), getItem("BLACKBERRY"), SlimefunItems.WHEAT_FLOUR, null, null, null, null, null, null},
 		12)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("PAVLOVA", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&rPavlova", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("PAVLOVA", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNjM2NWI2MWU3OWZjYjkxM2JjODYwZjRlYzYzNWQ0YTZhYjFiNzRiZmFiNjJmYjZlYTZkODlhMTZhYTg0MSJ9fX0=", "&rPavlova", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("LEMON"), getItem("STRAWBERRY"), new ItemStack(Material.SUGAR), new ItemStack(Material.EGG), SlimefunItems.HEAVY_CREAM, null, null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CORN_ON_THE_COB", Material.GOLDEN_CARROT, "&6Maíz asado", "", "&7&oRestaura &b&o" + "4.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CORN_ON_THE_COB", Material.GOLDEN_CARROT, "&6Maíz asado", "", "&7&oRestaura &b&o" + "4.5" + " &7&ode hambre"),
 		new ItemStack[] {SlimefunItems.BUTTER, getItem("CORN"), null, null, null, null, null, null, null},
 		9)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CREAMED_CORN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE3NGIzNGM1NDllZWQ4YmFmZTcyNzYxOGJhYjY4MjFhZmNiMTc4N2I1ZGVjZDFlZWNkNmMyMTNlN2U3YzZkIn19fQ==", "&rCrema de Maíz", "", "&7&oRestaura &b&o" + "4.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CREAMED_CORN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTE3NGIzNGM1NDllZWQ4YmFmZTcyNzYxOGJhYjY4MjFhZmNiMTc4N2I1ZGVjZDFlZWNkNmMyMTNlN2U3YzZkIn19fQ==", "&rCrema de Maíz", "", "&7&oRestaura &b&o" + "4.0" + " &7&ode hambre"),
 		new ItemStack[] {SlimefunItems.HEAVY_CREAM, getItem("CORN"), new ItemStack(Material.BOWL), null, null, null, null, null, null},
 		8)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BACON", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTdiYTIyZDVkZjIxZTgyMWE2ZGU0YjhjOWQzNzNhM2FhMTg3ZDhhZTc0ZjI4OGE4MmQyYjYxZjI3MmU1In19fQ==", "&rTocino", "", "&7&oRestaura &b&o" + "1.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BACON", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTdiYTIyZDVkZjIxZTgyMWE2ZGU0YjhjOWQzNzNhM2FhMTg3ZDhhZTc0ZjI4OGE4MmQyYjYxZjI3MmU1In19fQ==", "&rTocino", "", "&7&oRestaura &b&o" + "1.5" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.COOKED_PORKCHOP), null, null, null, null, null, null, null, null},
 		3)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSandwich", "", "&7&oRestaura &b&o" + "9.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSandwich", "", "&7&oRestaura &b&o" + "9.5" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BREAD), getItem("MAYO"), new ItemStack(Material.COOKED_BEEF), getItem("TOMATO"), getItem("LETTUCE"), null, null, null, null},
 		19)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BLT", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rBLT", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BLT", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rBLT", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BREAD), new ItemStack(Material.COOKED_PORKCHOP), getItem("TOMATO"), getItem("LETTUCE"), null, null, null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("LEAFY_CHICKEN_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSandwich De Pollo Frondoso", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("LEAFY_CHICKEN_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSandwich De Pollo Frondoso", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHICKEN_SANDWICH"), getItem("LETTUCE"), null, null, null, null, null, null, null},
 		1)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("LEAFY_FISH_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSandwich De Pescado Frondoso", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("LEAFY_FISH_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSandwich De Pescado Frondoso", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("FISH_SANDWICH"), getItem("LETTUCE"), null, null, null, null, null, null, null},
 		11)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("HAMBURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("HAMBURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BREAD), new ItemStack(Material.COOKED_BEEF), null, null, null, null, null, null, null},
 		10)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHEESEBURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa con queso", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHEESEBURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa con queso", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("HAMBURGER"), SlimefunItems.CHEESE, null, null, null, null, null, null, null},
 		13)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BACON_CHEESEBURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa con queso y tocino", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BACON_CHEESEBURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa con queso y tocino", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHEESEBURGER"), getItem("BACON"), null, null, null, null, null, null, null},
 		17)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("DELUXE_CHEESEBURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rDeluxe Cheeseburger", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("DELUXE_CHEESEBURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rDeluxe Cheeseburger", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHEESEBURGER"), getItem("LETTUCE"), getItem("TOMATO"), null, null, null, null, null, null},
 		16)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("GARLIC_BREAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMzZmE3ZDNlNjNiMjgwYTVkN2UyYmIwOTMzMmRmZjg2YjE3ZGVjZDJiMDllY2NkZDYyZGE1MjY1NTk3Zjc0ZCJ9fX0=", "&rGarlic Bread", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("GARLIC_BREAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMzZmE3ZDNlNjNiMjgwYTVkN2UyYmIwOTMzMmRmZjg2YjE3ZGVjZDJiMDllY2NkZDYyZGE1MjY1NTk3Zjc0ZCJ9fX0=", "&rGarlic Bread", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("GARLIC"), new ItemStack(Material.BREAD), null, null, null, null, null, null, null},
 		10)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("GARLIC_CHEESE_BREAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMzZmE3ZDNlNjNiMjgwYTVkN2UyYmIwOTMzMmRmZjg2YjE3ZGVjZDJiMDllY2NkZDYyZGE1MjY1NTk3Zjc0ZCJ9fX0=", "&rPan de queso y ajo", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("GARLIC_CHEESE_BREAD", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTMzZmE3ZDNlNjNiMjgwYTVkN2UyYmIwOTMzMmRmZjg2YjE3ZGVjZDJiMDllY2NkZDYyZGE1MjY1NTk3Zjc0ZCJ9fX0=", "&rPan de queso y ajo", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {SlimefunItems.CHEESE, getItem("GARLIC"), new ItemStack(Material.BREAD), null, null, null, null, null, null},
 		13)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CARROT_CAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjkxMzY1MTRmMzQyZTdjNTIwOGExNDIyNTA2YTg2NjE1OGVmODRkMmIyNDkyMjAxMzllOGJmNjAzMmUxOTMifX19", "&rPastel de zanahoria", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CARROT_CAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjkxMzY1MTRmMzQyZTdjNTIwOGExNDIyNTA2YTg2NjE1OGVmODRkMmIyNDkyMjAxMzllOGJmNjAzMmUxOTMifX19", "&rPastel de zanahoria", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.CARROT), SlimefunItems.WHEAT_FLOUR, new ItemStack(Material.SUGAR), new ItemStack(Material.EGG), null, null, null, null, null},
 		12)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHICKEN_BURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa de pollo", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHICKEN_BURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa de pollo", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BREAD), new ItemStack(Material.COOKED_CHICKEN), null, null, null, null, null, null, null},
 		10)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHICKEN_CHEESEBURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa de pollo con queso", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHICKEN_CHEESEBURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa de pollo con queso", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHICKEN_BURGER"), SlimefunItems.CHEESE, null, null, null, null, null, null, null},
 		13)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BACON_BURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa de tocino", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BACON_BURGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvY2RhZGYxNzQ0NDMzZTFjNzlkMWQ1OWQyNzc3ZDkzOWRlMTU5YTI0Y2Y1N2U4YTYxYzgyYmM0ZmUzNzc3NTUzYyJ9fX0=", "&rHamburguesa de tocino", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BREAD), getItem("BACON"), null, null, null, null, null, null, null},
 		10)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BACON_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSandwich con tocino", "", "&7&oRestaura &b&o" + "9.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BACON_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rSandwich con tocino", "", "&7&oRestaura &b&o" + "9.5" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BREAD), getItem("BACON"), getItem("MAYO"), getItem("TOMATO"), getItem("LETTUCE"), null, null, null, null},
 		19)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("TACO", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOThjZWQ3NGEyMjAyMWE1MzVmNmJjZTIxYzhjNjMyYjI3M2RjMmQ5NTUyYjcxYTM4ZDU3MjY5YjM1MzhjZiJ9fX0=", "&rTaco", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("TACO", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOThjZWQ3NGEyMjAyMWE1MzVmNmJjZTIxYzhjNjMyYjI3M2RjMmQ5NTUyYjcxYTM4ZDU3MjY5YjM1MzhjZiJ9fX0=", "&rTaco", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CORNMEAL"), new ItemStack(Material.COOKED_BEEF), getItem("LETTUCE"), getItem("TOMATO"), getItem("CHEESE"), null, null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("FISH_TACO", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOThjZWQ3NGEyMjAyMWE1MzVmNmJjZTIxYzhjNjMyYjI3M2RjMmQ5NTUyYjcxYTM4ZDU3MjY5YjM1MzhjZiJ9fX0=", "&rTaco de pescado", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("FISH_TACO", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOThjZWQ3NGEyMjAyMWE1MzVmNmJjZTIxYzhjNjMyYjI3M2RjMmQ5NTUyYjcxYTM4ZDU3MjY5YjM1MzhjZiJ9fX0=", "&rTaco de pescado", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CORNMEAL"), new ItemStack(Material.COOKED_COD), getItem("LETTUCE"), getItem("TOMATO"), getItem("CHEESE"), null, null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("STREET_TACO", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFkN2MwYTA0ZjE0ODVjN2EzZWYyNjFhNDhlZTgzYjJmMWFhNzAxYWIxMWYzZmM5MTFlMDM2NmE5Yjk3ZSJ9fX0=", "&rTaco callejero", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("STREET_TACO", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWFkN2MwYTA0ZjE0ODVjN2EzZWYyNjFhNDhlZTgzYjJmMWFhNzAxYWIxMWYzZmM5MTFlMDM2NmE5Yjk3ZSJ9fX0=", "&rTaco callejero", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CORNMEAL"), new ItemStack(Material.COOKED_BEEF), getItem("CILANTRO"), getItem("ONION"), null, null, null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("JAMMY_DODGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWQwMGRmYjNhNTdjMDY4YTBjYzdiNjI0ZDhkODg1MjA3MDQzNWQyNjM0YzBlNWRhOWNiYmFiNDYxNzRhZjBkZiJ9fX0=", "&cBizcocho con mermelada", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("JAMMY_DODGER", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMWQwMGRmYjNhNTdjMDY4YTBjYzdiNjI0ZDhkODg1MjA3MDQzNWQyNjM0YzBlNWRhOWNiYmFiNDYxNzRhZjBkZiJ9fX0=", "&cBizcocho con mermelada", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
 		new ItemStack[] {null, getItem("BISCUIT"), null, null, getItem("RASPBERRY_JUICE"), null, null, getItem("BISCUIT"), null},
 		8)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("PANCAKES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQ3ZjRmNWE3NGM2NjkxMjgwY2Q4MGU3MTQ4YjQ5YjJjZTE3ZGNmNjRmZDU1MzY4NjI3ZjVkOTJhOTc2YTZhOCJ9fX0=", "&rPanqueques", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("PANCAKES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQ3ZjRmNWE3NGM2NjkxMjgwY2Q4MGU3MTQ4YjQ5YjJjZTE3ZGNmNjRmZDU1MzY4NjI3ZjVkOTJhOTc2YTZhOCJ9fX0=", "&rPanqueques", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("WHEAT_FLOUR"), new ItemStack(Material.SUGAR), getItem("BUTTER"), new ItemStack(Material.EGG), new ItemStack(Material.EGG), null, null, null, null},
 		12)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BLUEBERRY_PANCAKES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQ3ZjRmNWE3NGM2NjkxMjgwY2Q4MGU3MTQ4YjQ5YjJjZTE3ZGNmNjRmZDU1MzY4NjI3ZjVkOTJhOTc2YTZhOCJ9fX0=", "&rPanqueques de arándano", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BLUEBERRY_PANCAKES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQ3ZjRmNWE3NGM2NjkxMjgwY2Q4MGU3MTQ4YjQ5YjJjZTE3ZGNmNjRmZDU1MzY4NjI3ZjVkOTJhOTc2YTZhOCJ9fX0=", "&rPanqueques de arándano", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("PANCAKES"), getItem("BLUEBERRY"), null, null, null, null, null, null, null},
 		13)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("SWEET_BERRY_PANCAKES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTQ0Y2E5OWUzMDhhMTg2YjMwMjgxYjIwMTdjNDQxODlhY2FmYjU5MTE1MmY4MWZlZWE5NmZlY2JlNTcifX19", "&rPanqueques de bayas dulces", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("SWEET_BERRY_PANCAKES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZTQ0Y2E5OWUzMDhhMTg2YjMwMjgxYjIwMTdjNDQxODlhY2FmYjU5MTE1MmY4MWZlZWE5NmZlY2JlNTcifX19", "&rPanqueques de bayas dulces", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("PANCAKES"), new ItemStack(Material.SWEET_BERRIES), null, null, null, null, null, null, null},
 		13)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("FRIES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTYzYjhhZWFmMWRmMTE0ODhlZmM5YmQzMDNjMjMzYTg3Y2NiYTNiMzNmN2ZiYTljMmZlY2FlZTk1NjdmMDUzIn19fQ==", "&rPapas fritas", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("FRIES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNTYzYjhhZWFmMWRmMTE0ODhlZmM5YmQzMDNjMjMzYTg3Y2NiYTNiMzNmN2ZiYTljMmZlY2FlZTk1NjdmMDUzIn19fQ==", "&rPapas fritas", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.POTATO), getItem("SALT"), null, null, null, null, null, null, null},
 		12)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("POPCORN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ5N2IxNDdjZmFlNTIyMDU1OTdmNzJlM2M0ZWY1MjUxMmU5Njc3MDIwZTRiNGZhNzUxMmMzYzZhY2RkOGMxIn19fQ==", "&rPalomitas de maiz", "", "&7&oRestaura &b&o" + "4.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("POPCORN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ5N2IxNDdjZmFlNTIyMDU1OTdmNzJlM2M0ZWY1MjUxMmU5Njc3MDIwZTRiNGZhNzUxMmMzYzZhY2RkOGMxIn19fQ==", "&rPalomitas de maiz", "", "&7&oRestaura &b&o" + "4.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CORN"), getItem("BUTTER"), null, null, null, null, null, null, null},
 		8)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("SWEET_POPCORN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ5N2IxNDdjZmFlNTIyMDU1OTdmNzJlM2M0ZWY1MjUxMmU5Njc3MDIwZTRiNGZhNzUxMmMzYzZhY2RkOGMxIn19fQ==", "&rPalomitas de maiz &7(Dulces)", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("SWEET_POPCORN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ5N2IxNDdjZmFlNTIyMDU1OTdmNzJlM2M0ZWY1MjUxMmU5Njc3MDIwZTRiNGZhNzUxMmMzYzZhY2RkOGMxIn19fQ==", "&rPalomitas de maiz &7(Dulces)", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CORN"), getItem("BUTTER"), new ItemStack(Material.SUGAR), null, null, null, null, null, null},
 		12)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("SALTY_POPCORN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ5N2IxNDdjZmFlNTIyMDU1OTdmNzJlM2M0ZWY1MjUxMmU5Njc3MDIwZTRiNGZhNzUxMmMzYzZhY2RkOGMxIn19fQ==", "&rPalomitas de maiz &7(Saladas)", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("SALTY_POPCORN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTQ5N2IxNDdjZmFlNTIyMDU1OTdmNzJlM2M0ZWY1MjUxMmU5Njc3MDIwZTRiNGZhNzUxMmMzYzZhY2RkOGMxIn19fQ==", "&rPalomitas de maiz &7(Saladas)", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CORN"), getItem("BUTTER"), getItem("SALT"), null, null, null, null, null, null},
 		12)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("SHEPARDS_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", "&rPastel de carne", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("SHEPARDS_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", "&rPastel de carne", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CABBAGE"), new ItemStack(Material.CARROT), SlimefunItems.WHEAT_FLOUR, new ItemStack(Material.COOKED_BEEF), getItem("TOMATO"), null, null, null, null},
 		16)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHICKEN_POT_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", "&rPastel de pollo", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHICKEN_POT_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", "&rPastel de pollo", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.COOKED_CHICKEN), new ItemStack(Material.CARROT), SlimefunItems.WHEAT_FLOUR, new ItemStack(Material.POTATO), null, null, null, null, null},
 		17)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHOCOLATE_CAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTExOWZjYTRmMjhhNzU1ZDM3ZmJlNWRjZjZkOGMzZWY1MGZlMzk0YzFhNzg1MGJjN2UyYjcxZWU3ODMwM2M0YyJ9fX0=", "&rPastel de cocholate", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHOCOLATE_CAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTExOWZjYTRmMjhhNzU1ZDM3ZmJlNWRjZjZkOGMzZWY1MGZlMzk0YzFhNzg1MGJjN2UyYjcxZWU3ODMwM2M0YyJ9fX0=", "&rPastel de cocholate", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHOCOLATE_BAR"), new ItemStack(Material.SUGAR), SlimefunItems.WHEAT_FLOUR, SlimefunItems.BUTTER, new ItemStack(Material.EGG), null, null, null, null},
 		17)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CREAM_COOKIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGZkNzFlMjBmYzUwYWJmMGRlMmVmN2RlY2ZjMDFjZTI3YWQ1MTk1NTc1OWUwNzJjZWFhYjk2MzU1ZjU5NGYwIn19fQ==", "&rGalleta De Crema", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CREAM_COOKIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGZkNzFlMjBmYzUwYWJmMGRlMmVmN2RlY2ZjMDFjZTI3YWQ1MTk1NTc1OWUwNzJjZWFhYjk2MzU1ZjU5NGYwIn19fQ==", "&rGalleta De Crema", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHOCOLATE_BAR"), new ItemStack(Material.SUGAR), SlimefunItems.WHEAT_FLOUR, SlimefunItems.BUTTER, SlimefunItems.HEAVY_CREAM, null, null, null, null},
 		12)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BLUEBERRY_MUFFIN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM3OTRjNzM2ZmM3NmU0NTcwNjgzMDMyNWI5NTk2OTQ2NmQ4NmY4ZDdiMjhmY2U4ZWRiMmM3NWUyYWIyNWMifX19", "&rMuffin de arándanos", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BLUEBERRY_MUFFIN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM3OTRjNzM2ZmM3NmU0NTcwNjgzMDMyNWI5NTk2OTQ2NmQ4NmY4ZDdiMjhmY2U4ZWRiMmM3NWUyYWIyNWMifX19", "&rMuffin de arándanos", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("BLUEBERRY"), new ItemStack(Material.SUGAR), SlimefunItems.WHEAT_FLOUR, SlimefunItems.BUTTER, SlimefunItems.HEAVY_CREAM, new ItemStack(Material.EGG), null, null, null},
 		13)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("PUMPKIN_MUFFIN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM3OTRjNzM2ZmM3NmU0NTcwNjgzMDMyNWI5NTk2OTQ2NmQ4NmY4ZDdiMjhmY2U4ZWRiMmM3NWUyYWIyNWMifX19", "&rMuffin De Calabaza", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("PUMPKIN_MUFFIN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM3OTRjNzM2ZmM3NmU0NTcwNjgzMDMyNWI5NTk2OTQ2NmQ4NmY4ZDdiMjhmY2U4ZWRiMmM3NWUyYWIyNWMifX19", "&rMuffin De Calabaza", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.PUMPKIN), new ItemStack(Material.SUGAR), SlimefunItems.WHEAT_FLOUR, SlimefunItems.BUTTER, SlimefunItems.HEAVY_CREAM, new ItemStack(Material.EGG), null, null, null},
 		13)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHOCOLATE_CHIP_MUFFIN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM3OTRjNzM2ZmM3NmU0NTcwNjgzMDMyNWI5NTk2OTQ2NmQ4NmY4ZDdiMjhmY2U4ZWRiMmM3NWUyYWIyNWMifX19", "&rMuffin De Chocolate", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHOCOLATE_CHIP_MUFFIN", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvODM3OTRjNzM2ZmM3NmU0NTcwNjgzMDMyNWI5NTk2OTQ2NmQ4NmY4ZDdiMjhmY2U4ZWRiMmM3NWUyYWIyNWMifX19", "&rMuffin De Chocolate", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHOCOLATE_BAR"), new ItemStack(Material.SUGAR), SlimefunItems.WHEAT_FLOUR, SlimefunItems.BUTTER, SlimefunItems.HEAVY_CREAM, new ItemStack(Material.EGG), null, null, null},
 		13)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BOSTON_CREAM_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGZkNzFlMjBmYzUwYWJmMGRlMmVmN2RlY2ZjMDFjZTI3YWQ1MTk1NTc1OWUwNzJjZWFhYjk2MzU1ZjU5NGYwIn19fQ==", "&rTarta de Crema de Boston", "", "&7&oRestaura &b&o" + "4.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BOSTON_CREAM_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZGZkNzFlMjBmYzUwYWJmMGRlMmVmN2RlY2ZjMDFjZTI3YWQ1MTk1NTc1OWUwNzJjZWFhYjk2MzU1ZjU5NGYwIn19fQ==", "&rTarta de Crema de Boston", "", "&7&oRestaura &b&o" + "4.5" + " &7&ode hambre"),
 		new ItemStack[] {null, getItem("CHOCOLATE_BAR"), null, null, SlimefunItems.HEAVY_CREAM, null, null, getItem("BISCUIT"), null},
 		9)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("HOT_DOG", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmMmQ3ZDdhOGIxYjk2OTE0Mjg4MWViNWE4N2U3MzdiNWY3NWZiODA4YjlhMTU3YWRkZGIyYzZhZWMzODIifX19", "&rHot Dog", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("HOT_DOG", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmMmQ3ZDdhOGIxYjk2OTE0Mjg4MWViNWE4N2U3MzdiNWY3NWZiODA4YjlhMTU3YWRkZGIyYzZhZWMzODIifX19", "&rHot Dog", "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre"),
 		new ItemStack[] {null, null, null, null, new ItemStack(Material.COOKED_PORKCHOP), null, null, new ItemStack(Material.BREAD), null},
 		10)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BACON_WRAPPED_CHEESE_FILLED_HOT_DOG", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmMmQ3ZDdhOGIxYjk2OTE0Mjg4MWViNWE4N2U3MzdiNWY3NWZiODA4YjlhMTU3YWRkZGIyYzZhZWMzODIifX19", "&rHot Dog envuelto en queso y tocino", "&7&o\"Cuando yo era Chef\" - @Eyamaz", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BACON_WRAPPED_CHEESE_FILLED_HOT_DOG", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmMmQ3ZDdhOGIxYjk2OTE0Mjg4MWViNWE4N2U3MzdiNWY3NWZiODA4YjlhMTU3YWRkZGIyYzZhZWMzODIifX19", "&rHot Dog envuelto en queso y tocino", "&7&o\"Cuando yo era Chef\" - @Eyamaz", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("BACON"), getItem("HOT_DOG"), getItem("BACON"), null, getItem("CHEESE"), null, null, null, null},
 		17)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BBQ_BACON_WRAPPED_HOT_DOG", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmMmQ3ZDdhOGIxYjk2OTE0Mjg4MWViNWE4N2U3MzdiNWY3NWZiODA4YjlhMTU3YWRkZGIyYzZhZWMzODIifX19", "&rHot Dog envuelto en tocino y BBQ", "&7&o\"¿Quieres hablar de Hot Dogs?\" - @Pahimar", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BBQ_BACON_WRAPPED_HOT_DOG", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmMmQ3ZDdhOGIxYjk2OTE0Mjg4MWViNWE4N2U3MzdiNWY3NWZiODA4YjlhMTU3YWRkZGIyYzZhZWMzODIifX19", "&rHot Dog envuelto en tocino y BBQ", "&7&o\"¿Quieres hablar de Hot Dogs?\" - @Pahimar", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("BACON"), getItem("HOT_DOG"), getItem("BACON"), null, getItem("BBQ_SAUCE"), null, null, null, null},
 		17)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BBQ_DOUBLE_BACON_WRAPPED_HOT_DOG_IN_A_TORTILLA_WITH_CHEESE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmMmQ3ZDdhOGIxYjk2OTE0Mjg4MWViNWE4N2U3MzdiNWY3NWZiODA4YjlhMTU3YWRkZGIyYzZhZWMzODIifX19", "&rHot Dog de doble tocino con BBQ envuelto en una tortilla con queso", "&7&o\"Cuando yo era Chef\" - @Eyamaz", "", "&7&oRestaura &b&o" + "10.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BBQ_DOUBLE_BACON_WRAPPED_HOT_DOG_IN_A_TORTILLA_WITH_CHEESE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzNmMmQ3ZDdhOGIxYjk2OTE0Mjg4MWViNWE4N2U3MzdiNWY3NWZiODA4YjlhMTU3YWRkZGIyYzZhZWMzODIifX19", "&rHot Dog de doble tocino con BBQ envuelto en una tortilla con queso", "&7&o\"Cuando yo era Chef\" - @Eyamaz", "", "&7&oRestaura &b&o" + "10.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("BACON"), getItem("BBQ_SAUCE"), getItem("BACON"), getItem("BACON"), new ItemStack(Material.COOKED_PORKCHOP), getItem("BACON"), getItem("CORNMEAL"), getItem("CHEESE"), getItem("CORNMEAL")},
 		20)
 		.register();
 
-		new CustomFood(category_drinks, new SlimefunItemStack("SWEETENED_TEA", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDhlOTRkZGQ3NjlhNWJlYTc0ODM3NmI0ZWM3MzgzZmQzNmQyNjc4OTRkN2MzYmVlMDExZThlNGY1ZmNkNyJ9fX0=", "&aTé endulzado", "", "&7&oRestaura &b&o" + "3.0" + " &7&ode hambre"),
+		new CustomFood(drinksCategory, new SlimefunItemStack("SWEETENED_TEA", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZDhlOTRkZGQ3NjlhNWJlYTc0ODM3NmI0ZWM3MzgzZmQzNmQyNjc4OTRkN2MzYmVlMDExZThlNGY1ZmNkNyJ9fX0=", "&aTé endulzado", "", "&7&oRestaura &b&o" + "3.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("TEA_LEAF"), new ItemStack(Material.SUGAR), null, null, null, null, null, null, null},
 		6)
 		.register();
 
-		new CustomFood(category_drinks, new SlimefunItemStack("HOT_CHOCOLATE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDExNTExYmRkNTViY2I4MjgwM2M4MDM5ZjFjMTU1ZmQ0MzA2MjYzNmUyM2Q0ZDQ2YzRkNzYxYzA0ZDIyYzIifX19", "&6Chocolate caliente", "", "&7&oRestaura &b&o" + "4.0" + " &7&ode hambre"),
+		new CustomFood(drinksCategory, new SlimefunItemStack("HOT_CHOCOLATE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNDExNTExYmRkNTViY2I4MjgwM2M4MDM5ZjFjMTU1ZmQ0MzA2MjYzNmUyM2Q0ZDQ2YzRkNzYxYzA0ZDIyYzIifX19", "&6Chocolate caliente", "", "&7&oRestaura &b&o" + "4.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHOCOLATE_BAR"), SlimefunItems.HEAVY_CREAM, null, null, null, null, null, null, null},
 		8)
 		.register();
 
-		new CustomFood(category_drinks, new SlimefunItemStack("PINACOLADA", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmE4ZjFmNzBlODU4MjU2MDdkMjhlZGNlMWEyYWQ0NTA2ZTczMmI0YTUzNDVhNWVhNmU4MDdjNGIzMTNlODgifX19", "&6Piña colada", "", "&7&oRestaura &b&o" + "7.0" + " &7&ode hambre"),
+		new CustomFood(drinksCategory, new SlimefunItemStack("PINACOLADA", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMmE4ZjFmNzBlODU4MjU2MDdkMjhlZGNlMWEyYWQ0NTA2ZTczMmI0YTUzNDVhNWVhNmU4MDdjNGIzMTNlODgifX19", "&6Piña colada", "", "&7&oRestaura &b&o" + "7.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("PINEAPPLE"), getItem("ICE_CUBE"), getItem("COCONUT_MILK"), null, null, null, null, null, null},
 		14)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHOCOLATE_STRAWBERRY", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmQ0ZWQ3YzczYWMyODUzZGZjYWE5Y2E3ODlmYjE4ZGExZDQ3YjE3YWQ2OGIyZGE3NDhkYmQxMWRlMWE0OWVmIn19fQ==", "&cFresa con chocolate", "", "&7&oRestaura &b&o" + "2.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHOCOLATE_STRAWBERRY", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvNmQ0ZWQ3YzczYWMyODUzZGZjYWE5Y2E3ODlmYjE4ZGExZDQ3YjE3YWQ2OGIyZGE3NDhkYmQxMWRlMWE0OWVmIn19fQ==", "&cFresa con chocolate", "", "&7&oRestaura &b&o" + "2.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHOCOLATE_BAR"), getItem("STRAWBERRY"), null, null, null, null, null, null, null},
 		5)
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack("LEMONADE", new CustomPotion("&eLimonada", Color.YELLOW, new PotionEffect(PotionEffectType.SATURATION, 8, 0), "", "&7&oRestaura &b&o" + "4.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(drinksCategory, new SlimefunItemStack("LEMONADE", new CustomPotion("&eLimonada", Color.YELLOW, new PotionEffect(PotionEffectType.SATURATION, 8, 0), "", "&7&oRestaura &b&o" + "4.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("LEMON_JUICE"), new ItemStack(Material.SUGAR), null, null, null, null, null, null, null})
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("SWEET_POTATO_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", "&rPastel de camote", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("SWEET_POTATO_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", "&rPastel de camote", "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("SWEET_POTATO"), new ItemStack(Material.EGG), SlimefunItems.HEAVY_CREAM, SlimefunItems.WHEAT_FLOUR, null, null, null, null, null},
 		13);
 
-		new CustomFood(category_food, new SlimefunItemStack("LAMINGTON", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTExOWZjYTRmMjhhNzU1ZDM3ZmJlNWRjZjZkOGMzZWY1MGZlMzk0YzFhNzg1MGJjN2UyYjcxZWU3ODMwM2M0YyJ9fX0=", "&rLamington", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("LAMINGTON", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTExOWZjYTRmMjhhNzU1ZDM3ZmJlNWRjZjZkOGMzZWY1MGZlMzk0YzFhNzg1MGJjN2UyYjcxZWU3ODMwM2M0YyJ9fX0=", "&rLamington", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHOCOLATE_BAR"), new ItemStack(Material.SUGAR), SlimefunItems.WHEAT_FLOUR, SlimefunItems.BUTTER, getItem("COCONUT"), null, null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("WAFFLES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQ3ZjRmNWE3NGM2NjkxMjgwY2Q4MGU3MTQ4YjQ5YjJjZTE3ZGNmNjRmZDU1MzY4NjI3ZjVkOTJhOTc2YTZhOCJ9fX0=", "&rWaffles", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("WAFFLES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQ3ZjRmNWE3NGM2NjkxMjgwY2Q4MGU3MTQ4YjQ5YjJjZTE3ZGNmNjRmZDU1MzY4NjI3ZjVkOTJhOTc2YTZhOCJ9fX0=", "&rWaffles", "", "&7&oRestaura &b&o" + "6.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("WHEAT_FLOUR"), new ItemStack(Material.EGG), new ItemStack(Material.SUGAR), getItem("BUTTER"), null, null, null, null, null},
 		12)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CLUB_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rClub Sandwich", "", "&7&oRestaura &b&o" + "9.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CLUB_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTE0MjE2ZDEwNzE0MDgyYmJlM2Y0MTI0MjNlNmIxOTIzMjM1MmY0ZDY0ZjlhY2EzOTEzY2I0NjMxOGQzZWQifX19", "&rClub Sandwich", "", "&7&oRestaura &b&o" + "9.5" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BREAD), getItem("MAYO"), getItem("BACON"), getItem("TOMATO"), getItem("LETTUCE"), getItem("MUSTARD"), null, null, null},
 		19)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("BURRITO", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM4N2E2MjFlMjY2MTg2ZTYwNjgzMzkyZWIyNzRlYmIyMjViMDQ4NjhhYjk1OTE3N2Q5ZGMxODFkOGYyODYifX19", "&rBurrito", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("BURRITO", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM4N2E2MjFlMjY2MTg2ZTYwNjgzMzkyZWIyNzRlYmIyMjViMDQ4NjhhYjk1OTE3N2Q5ZGMxODFkOGYyODYifX19", "&rBurrito", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CORNMEAL"), new ItemStack(Material.COOKED_BEEF), getItem("LETTUCE"), getItem("TOMATO"), getItem("HEAVY_CREAM"), getItem("CHEESE"), null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHICKEN_BURRITO", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM4N2E2MjFlMjY2MTg2ZTYwNjgzMzkyZWIyNzRlYmIyMjViMDQ4NjhhYjk1OTE3N2Q5ZGMxODFkOGYyODYifX19", "&rBurrito de polloo", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHICKEN_BURRITO", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYTM4N2E2MjFlMjY2MTg2ZTYwNjgzMzkyZWIyNzRlYmIyMjViMDQ4NjhhYjk1OTE3N2Q5ZGMxODFkOGYyODYifX19", "&rBurrito de polloo", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CORNMEAL"), new ItemStack(Material.COOKED_CHICKEN), getItem("LETTUCE"), getItem("TOMATO"), getItem("HEAVY_CREAM"), getItem("CHEESE"), null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("GRILLED_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmFlZTg0ZDE5Yzg1YWZmNzk2Yzg4YWJkYTIxZWM0YzkyYzY1NWUyZDY3YjcyZTVlNzdiNWFhNWU5OWVkIn19fQ==", "&rSandwich a la parrilla", "", "&7&oRestaura &b&o" + "5.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("GRILLED_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvYmFlZTg0ZDE5Yzg1YWZmNzk2Yzg4YWJkYTIxZWM0YzkyYzY1NWUyZDY3YjcyZTVlNzdiNWFhNWU5OWVkIn19fQ==", "&rSandwich a la parrilla", "", "&7&oRestaura &b&o" + "5.5" + " &7&ode hambre"),
 		new ItemStack[] {new ItemStack(Material.BREAD), new ItemStack(Material.COOKED_PORKCHOP), getItem("CHEESE"), null, null, null, null, null, null},
 		11)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("LASAGNA", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMDNhMzU3NGE4NDhmMzZhZTM3MTIxZTkwNThhYTYxYzEyYTI2MWVlNWEzNzE2ZjZkODI2OWUxMWUxOWUzNyJ9fX0=", "&rLasagna", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("LASAGNA", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMDNhMzU3NGE4NDhmMzZhZTM3MTIxZTkwNThhYTYxYzEyYTI2MWVlNWEzNzE2ZjZkODI2OWUxMWUxOWUzNyJ9fX0=", "&rLasagna", "", "&7&oRestaura &b&o" + "8.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("TOMATO"), getItem("CHEESE"), SlimefunItems.WHEAT_FLOUR, getItem("TOMATO"), getItem("CHEESE"), new ItemStack(Material.COOKED_BEEF), null, null, null},
 		17)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("ICE_CREAM", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTUzNjZjYTE3OTc0ODkyZTRmZDRjN2I5YjE4ZmViMTFmMDViYTJlYzQ3YWE1MDM1YzgxYTk1MzNiMjgifX19", "&rHelado", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("ICE_CREAM", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTUzNjZjYTE3OTc0ODkyZTRmZDRjN2I5YjE4ZmViMTFmMDViYTJlYzQ3YWE1MDM1YzgxYTk1MzNiMjgifX19", "&rHelado", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("HEAVY_CREAM"), getItem("ICE_CUBE"), new ItemStack(Material.SUGAR), new ItemStack(Material.COCOA_BEANS), getItem("STRAWBERRY"), null, null, null, null},
 		16)
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack("PINEAPPLE_JUICE", new CustomPotion("&6Jugo de piñacolada", Color.ORANGE, new PotionEffect(PotionEffectType.SATURATION, 6, 0), "", "&7&oRestaura &b&o" + "3.0" + " &7&ode hambre")), RecipeType.JUICER,
+		new Juice(drinksCategory, new SlimefunItemStack("PINEAPPLE_JUICE", new CustomPotion("&6Jugo de piñacolada", Color.ORANGE, new PotionEffect(PotionEffectType.SATURATION, 6, 0), "", "&7&oRestaura &b&o" + "3.0" + " &7&ode hambre")), RecipeType.JUICER,
 		new ItemStack[] {getItem("PINEAPPLE"), null, null, null, null, null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack("PINEAPPLE_SMOOTHIE", new CustomPotion("&6Licuado de piñacolada", Color.ORANGE, new PotionEffect(PotionEffectType.SATURATION, 10, 0), "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(drinksCategory, new SlimefunItemStack("PINEAPPLE_SMOOTHIE", new CustomPotion("&6Licuado de piñacolada", Color.ORANGE, new PotionEffect(PotionEffectType.SATURATION, 10, 0), "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem("PINEAPPLE_JUICE"), getItem("ICE_CUBE"), null, null, null, null, null, null, null})
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("TIRAMISU", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY5MDkxZDI4ODAyMmM3YjBlYjZkM2UzZjQ0YjBmZWE3ZjJjMDY5ZjQ5NzQ5MWExZGNhYjU4N2ViMWQ1NmQ0In19fQ==", "&rTiramisú", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("TIRAMISU", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY5MDkxZDI4ODAyMmM3YjBlYjZkM2UzZjQ0YjBmZWE3ZjJjMDY5ZjQ5NzQ5MWExZGNhYjU4N2ViMWQ1NmQ0In19fQ==", "&rTiramisú", "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("HEAVY_CREAM"), new ItemStack(Material.EGG), new ItemStack(Material.SUGAR), new ItemStack(Material.COCOA_BEANS), new ItemStack(Material.EGG), null, null, null, null},
 		16)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("TIRAMISU_WITH_STRAWBERRIES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY5MDkxZDI4ODAyMmM3YjBlYjZkM2UzZjQ0YjBmZWE3ZjJjMDY5ZjQ5NzQ5MWExZGNhYjU4N2ViMWQ1NmQ0In19fQ==", "&rTiramisú con fresas", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("TIRAMISU_WITH_STRAWBERRIES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY5MDkxZDI4ODAyMmM3YjBlYjZkM2UzZjQ0YjBmZWE3ZjJjMDY5ZjQ5NzQ5MWExZGNhYjU4N2ViMWQ1NmQ0In19fQ==", "&rTiramisú con fresas", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("TIRAMISU"), getItem("STRAWBERRY"), null, null, null, null, null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("TIRAMISU_WITH_RASPBERRIES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY5MDkxZDI4ODAyMmM3YjBlYjZkM2UzZjQ0YjBmZWE3ZjJjMDY5ZjQ5NzQ5MWExZGNhYjU4N2ViMWQ1NmQ0In19fQ==", "&rTiramisú con frambuesas", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("TIRAMISU_WITH_RASPBERRIES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY5MDkxZDI4ODAyMmM3YjBlYjZkM2UzZjQ0YjBmZWE3ZjJjMDY5ZjQ5NzQ5MWExZGNhYjU4N2ViMWQ1NmQ0In19fQ==", "&rTiramisú con frambuesas", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("TIRAMISU"), getItem("RASPBERRY"), null, null, null, null, null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("TIRAMISU_WITH_BLACKBERRIES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY5MDkxZDI4ODAyMmM3YjBlYjZkM2UzZjQ0YjBmZWE3ZjJjMDY5ZjQ5NzQ5MWExZGNhYjU4N2ViMWQ1NmQ0In19fQ==", "&rTiramisú con zarzamoras", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("TIRAMISU_WITH_BLACKBERRIES", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMTY5MDkxZDI4ODAyMmM3YjBlYjZkM2UzZjQ0YjBmZWE3ZjJjMDY5ZjQ5NzQ5MWExZGNhYjU4N2ViMWQ1NmQ0In19fQ==", "&rTiramisú con zarzamoras", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("TIRAMISU"), getItem("BLACKBERRY"), null, null, null, null, null, null, null},
 		18)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("CHOCOLATE_PEAR_CAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTExOWZjYTRmMjhhNzU1ZDM3ZmJlNWRjZjZkOGMzZWY1MGZlMzk0YzFhNzg1MGJjN2UyYjcxZWU3ODMwM2M0YyJ9fX0=", "&rPastel de chocolate y pera", "", "&7&oRestaura &b&o" + "9.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("CHOCOLATE_PEAR_CAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTExOWZjYTRmMjhhNzU1ZDM3ZmJlNWRjZjZkOGMzZWY1MGZlMzk0YzFhNzg1MGJjN2UyYjcxZWU3ODMwM2M0YyJ9fX0=", "&rPastel de chocolate y pera", "", "&7&oRestaura &b&o" + "9.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem("CHOCOLATE_BAR"), new ItemStack(Material.SUGAR), SlimefunItems.WHEAT_FLOUR, SlimefunItems.BUTTER, getItem("PEAR"), new ItemStack(Material.EGG), null, null, null},
 		19)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack("APPLE_PEAR_CAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", "&cPastel de manzana y pera", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack("APPLE_PEAR_CAKE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", "&cPastel de manzana y pera", "", "&7&oRestaura &b&o" + "9.0" + " &7&ode hambre"),
 		new ItemStack[] {getItem("APPLE"), new ItemStack(Material.SUGAR), SlimefunItems.WHEAT_FLOUR, SlimefunItems.BUTTER, getItem("PEAR"), new ItemStack(Material.EGG), null, null, null},
 		18)
 		.register();
@@ -704,22 +704,22 @@ public class ExoticGarden extends JavaPlugin {
 
 		items.put(id + "_SAPLING", sfi);
 
-		new SlimefunItem(category_main, sfi, new RecipeType(new CustomItem(Material.GRASS, "&7Rompiendo césped")),
+		new SlimefunItem(mainCategory, sfi, new RecipeType(new CustomItem(Material.GRASS, "&7Rompiendo césped")),
 		new ItemStack[] {null, null, null, null, new ItemStack(Material.GRASS), null, null, null, null})
 		.register();
 
-		new EGPlant(category_main, new SlimefunItemStack(id, texture, color + name), new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7Obtenible del árbol específico")), true,
+		new EGPlant(mainCategory, new SlimefunItemStack(id, texture, color + name), new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7Obtenible del árbol específico")), true,
 		new ItemStack[] {null, null, null, null, getItem(id + "_SAPLING"), null, null, null, null})
 		.register();
 
 		if (pcolor != null) {
-			new Juice(category_drinks, new SlimefunItemStack(juice.toUpperCase().replace(" ", "_"), new CustomPotion(color + juice, pcolor, new PotionEffect(PotionEffectType.SATURATION, 6, 0), "", "&7&oRestaura &b&o" + "3.0" + " &7&ode hambre")), RecipeType.JUICER,
+			new Juice(drinksCategory, new SlimefunItemStack(juice.toUpperCase().replace(" ", "_"), new CustomPotion(color + juice, pcolor, new PotionEffect(PotionEffectType.SATURATION, 6, 0), "", "&7&oRestaura &b&o" + "3.0" + " &7&ode hambre")), RecipeType.JUICER,
 			new ItemStack[] {getItem(id), null, null, null, null, null, null, null, null})
 			.register();
 		}
 
 		if (pie) {
-			new CustomFood(category_food, new SlimefunItemStack(id + "_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", color + "Pay de " + name, "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+			new CustomFood(foodCategory, new SlimefunItemStack(id + "_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", color + "Pay de " + name, "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 			new ItemStack[] {getItem(id), new ItemStack(Material.EGG), new ItemStack(Material.SUGAR), new ItemStack(Material.MILK_BUCKET), SlimefunItems.WHEAT_FLOUR, null, null, null, null},
 			13)
 			.register();
@@ -737,28 +737,28 @@ public class ExoticGarden extends JavaPlugin {
 
 		items.put(name.toUpperCase() + "_BUSH", sfi);
 
-		new SlimefunItem(category_main, sfi, new RecipeType(new CustomItem(Material.GRASS, "&7Rompiendo Césped")),
+		new SlimefunItem(mainCategory, sfi, new RecipeType(new CustomItem(Material.GRASS, "&7Rompiendo Césped")),
 		new ItemStack[] {null, null, null, null, new ItemStack(Material.GRASS), null, null, null, null})
 		.register();
 
-		new EGPlant(category_main, new SlimefunItemStack(name.toUpperCase(), texture, color + name), new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7Obtenido en un arbusto especifico")), true,
+		new EGPlant(mainCategory, new SlimefunItemStack(name.toUpperCase(), texture, color + name), new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7Obtenido en un arbusto especifico")), true,
 		new ItemStack[] {null, null, null, null, getItem(name.toUpperCase() + "_BUSH"), null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack(name.toUpperCase() + "_JUICE", new CustomPotion(color + "Jugo de " + name, pcolor, new PotionEffect(PotionEffectType.SATURATION, 6, 0), "", "&7&oRestaura &b&o" + "3.0" + " &7&ode hambre")), RecipeType.JUICER,
+		new Juice(drinksCategory, new SlimefunItemStack(name.toUpperCase() + "_JUICE", new CustomPotion(color + "Jugo de " + name, pcolor, new PotionEffect(PotionEffectType.SATURATION, 6, 0), "", "&7&oRestaura &b&o" + "3.0" + " &7&ode hambre")), RecipeType.JUICER,
 		new ItemStack[] {getItem(name.toUpperCase()), null, null, null, null, null, null, null, null})
 		.register();
 
-		new Juice(category_drinks, new SlimefunItemStack(name.toUpperCase() + "_SMOOTHIE", new CustomPotion(color + "Licuado de " + name, pcolor, new PotionEffect(PotionEffectType.SATURATION, 10, 0), "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new Juice(drinksCategory, new SlimefunItemStack(name.toUpperCase() + "_SMOOTHIE", new CustomPotion(color + "Licuado de " + name, pcolor, new PotionEffect(PotionEffectType.SATURATION, 10, 0), "", "&7&oRestaura &b&o" + "5.0" + " &7&ode hambre")), RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {getItem(name.toUpperCase() + "_JUICE"), getItem("ICE_CUBE"), null, null, null, null, null, null, null})
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack(name.toUpperCase() + "_JELLY_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGM4YTkzOTA5M2FiMWNkZTY2NzdmYWY3NDgxZjMxMWU1ZjE3ZjYzZDU4ODI1ZjBlMGMxNzQ2MzFmYjA0MzkifX19", color + "Sandwich con jalea de " + name, "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack(name.toUpperCase() + "_JELLY_SANDWICH", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGM4YTkzOTA5M2FiMWNkZTY2NzdmYWY3NDgxZjMxMWU1ZjE3ZjYzZDU4ODI1ZjBlMGMxNzQ2MzFmYjA0MzkifX19", color + "Sandwich con jalea de " + name, "", "&7&oRestaura &b&o" + "8.0" + " &7&ode hambre"),
 		new ItemStack[] {null, new ItemStack(Material.BREAD), null, null, getItem(name.toUpperCase() + "_JUICE"), null, null, new ItemStack(Material.BREAD), null},
 		16)
 		.register();
 
-		new CustomFood(category_food, new SlimefunItemStack(name.toUpperCase() + "_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", color + "Pay de " + name, "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
+		new CustomFood(foodCategory, new SlimefunItemStack(name.toUpperCase() + "_PIE", "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzQxOGM2YjBhMjlmYzFmZTc5MWM4OTc3NGQ4MjhmZjYzZDJhOWZhNmM4MzM3M2VmM2FhNDdiZjNlYjc5In19fQ==", color + "Pay de " + name, "", "&7&oRestaura &b&o" + "6.5" + " &7&ode hambre"),
 		new ItemStack[] {getItem(name.toUpperCase()), new ItemStack(Material.EGG), new ItemStack(Material.SUGAR), new ItemStack(Material.MILK_BUCKET), SlimefunItems.WHEAT_FLOUR, null, null, null, null},
 		13)
 		.register();
@@ -777,11 +777,11 @@ public class ExoticGarden extends JavaPlugin {
 
 		items.put(name.toUpperCase() + "_BUSH", sfi);
 
-		new SlimefunItem(category_main, sfi, new RecipeType(new CustomItem(Material.GRASS, "&7Rompiendo césped")),
+		new SlimefunItem(mainCategory, sfi, new RecipeType(new CustomItem(Material.GRASS, "&7Rompiendo césped")),
 		new ItemStack[] {null, null, null, null, new ItemStack(Material.GRASS), null, null, null, null})
 		.register();
 
-		new EGPlant(category_main, new SlimefunItemStack(name.toUpperCase().replace(" ", "_"), texture, color + name), new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7Obtenible del arbusto en específico")), true,
+		new EGPlant(mainCategory, new SlimefunItemStack(name.toUpperCase().replace(" ", "_"), texture, color + name), new RecipeType(new CustomItem(Material.OAK_LEAVES, "&7Obtenible del arbusto en específico")), true,
 		new ItemStack[] {null, null, null, null, getItem(name.toUpperCase().replace(" ", "_") + "_BUSH"), null, null, null, null})
 		.register();
 	}
@@ -792,11 +792,11 @@ public class ExoticGarden extends JavaPlugin {
 		Berry berry = new Berry(essence, name.toUpperCase() + "_ESSENCE", PlantType.ORE_PLANT, texture);
 		berries.add(berry);
 
-		new SlimefunItem(category_magic, new SlimefunItemStack(name.toUpperCase().replace(" ", "_") + "_PLANT", Material.OAK_SAPLING, "&r" + "&rPlanta de " + name), RecipeType.ENHANCED_CRAFTING_TABLE,
+		new SlimefunItem(magicalCategory, new SlimefunItemStack(name.toUpperCase().replace(" ", "_") + "_PLANT", Material.OAK_SAPLING, "&r" + "&rPlanta de " + name), RecipeType.ENHANCED_CRAFTING_TABLE,
 		recipe)
 		.register();
 
-		HandledBlock plant = new HandledBlock(category_magic, essence, RecipeType.ENHANCED_CRAFTING_TABLE,
+		HandledBlock plant = new HandledBlock(magicalCategory, essence, RecipeType.ENHANCED_CRAFTING_TABLE,
 		new ItemStack[] {essence, essence, essence, essence, null, essence, essence, essence, essence});
 
 		plant.setRecipeOutput(item.clone());
@@ -805,26 +805,29 @@ public class ExoticGarden extends JavaPlugin {
 
 	public static Berry getBerry(Block block) {
 		SlimefunItem item = BlockStorage.check(block);
+		
 		if (item instanceof HandledBlock) {
 			for (Berry berry : instance.berries) {
 				if (item.getID().equalsIgnoreCase(berry.getID())) return berry;
 			}
 		}
+		
 		return null;
 	}
 
 	public static ItemStack harvestPlant(Block block) {
 		ItemStack itemstack = null;
 		SlimefunItem item = BlockStorage.check(block);
+		
 		if (item != null) {
 			for (Berry berry : instance.berries) {
 				if (item.getID().equalsIgnoreCase(berry.getID())) {
 					switch (berry.getType()) {
 						case ORE_PLANT:
-						case DOUBLE_PLANT: {
-							Block plant;
+						case DOUBLE_PLANT:
+							Block plant = block;
+							
 							if (BlockStorage.check(block.getRelative(BlockFace.DOWN)) == null) {
-								plant = block;
 								BlockStorage.clearBlockInfo(block.getRelative(BlockFace.UP));
 								block.getWorld().playEffect(block.getRelative(BlockFace.UP).getLocation(), Effect.STEP_SOUND, Material.OAK_LEAVES);
 								block.getRelative(BlockFace.UP).setType(Material.AIR);
@@ -835,23 +838,23 @@ public class ExoticGarden extends JavaPlugin {
 								block.getWorld().playEffect(block.getLocation(), Effect.STEP_SOUND, Material.OAK_LEAVES);
 								block.setType(Material.AIR);
 							}
+							
 							plant.setType(Material.OAK_SAPLING);
 							itemstack = berry.getItem();
 							BlockStorage._integrated_removeBlockInfo(plant.getLocation(), false);
 							BlockStorage.store(plant, getItem(berry.toBush()));
 							break;
-						}
-						default: {
+						default:
 							block.setType(Material.OAK_SAPLING);
 							itemstack = berry.getItem();
 							BlockStorage._integrated_removeBlockInfo(block.getLocation(), false);
 							BlockStorage.store(block, getItem(berry.toBush()));
 							break;
-						}
 					}
 				}
 			}
 		}
+		
 		return itemstack;
 	}
 
